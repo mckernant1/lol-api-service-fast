@@ -13,6 +13,7 @@ chrono = "0.4.23"
 color-eyre = "0.6.2"
 derive_more = "0.99.17"
 env_logger = "0.10.0"
+itertools = "0.10.5"
 log = "0.4.17"
 lol-esports-api = "0.0.22"
 serde_dynamo = { version = "4.0.12", features = ["aws-sdk-dynamodb+0_24"] }

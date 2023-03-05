@@ -3,8 +3,10 @@ use actix_web::{
     web::{self, Data, Path},
     HttpResponse, Scope,
 };
+use color_eyre::Result;
+use tokio_stream::StreamExt;
 
-use crate::{error::LolEsportsApiError, svc::player::PlayerService, util::Response};
+use crate::{svc::player::PlayerService, util::Response};
 
 pub fn player_endpoints() -> Scope {
     web::scope("/players").service(get_players_on_team)
@@ -17,8 +19,10 @@ async fn get_players_on_team(
 ) -> Response {
     let team_id = team_id.to_string();
 
-    match players_service.get_players_on_team(team_id).await {
-        Ok(players) => Ok(HttpResponse::Ok().json(players)),
-        Err(e) => Err(LolEsportsApiError::internal_error(e)),
-    }
+    let players = players_service
+        .get_players_on_team(team_id)
+        .await
+        .collect::<Result<Vec<_>>>()
+        .await?;
+    Ok(HttpResponse::Ok().json(players))
 }

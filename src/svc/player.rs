@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use color_eyre::{eyre::Context, Result};
 use lol_esports_api::models::Player;
-use serde_dynamo::from_items;
-use tokio_stream::StreamExt;
+use serde_dynamo::{from_item};
+use tokio_stream::{Stream, StreamExt};
 
 use crate::util::{PLAYERS_TABLE_NAME, PLAYERS_TABLE_TEAM_INDEX};
 
@@ -17,9 +19,8 @@ impl PlayerService {
 }
 
 impl PlayerService {
-    pub async fn get_players_on_team(&self, team_id: String) -> Result<Vec<Player>> {
-        let items = self
-            .ddb
+    pub async fn get_players_on_team(&self, team_id: String) -> impl Stream<Item = Result<Player>> {
+        self.ddb
             .query()
             .table_name(PLAYERS_TABLE_NAME)
             .index_name(PLAYERS_TABLE_TEAM_INDEX)
@@ -28,9 +29,10 @@ impl PlayerService {
             .into_paginator()
             .items()
             .send()
-            .collect::<Result<Vec<_>, _>>()
-            .await?;
-
-        from_items(items).wrap_err("Failed to convert to players")
+            .map(|it| {
+                let it = it?;
+                from_item::<HashMap<String, AttributeValue>, Player>(it.clone())
+                    .wrap_err(format!("Failed to convert to Tournament {:?}", it))
+            })
     }
 }

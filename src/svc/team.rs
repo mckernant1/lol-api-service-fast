@@ -1,8 +1,10 @@
-use aws_sdk_dynamodb::Client;
+use std::collections::HashMap;
+
+use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use color_eyre::{eyre::Context, Result};
 use lol_esports_api::models::Team;
-use serde_dynamo::{from_item, from_items};
-use tokio_stream::StreamExt;
+use serde_dynamo::{from_item};
+use tokio_stream::{Stream, StreamExt};
 
 use crate::util::TEAMS_TABLE_NAME;
 
@@ -36,17 +38,17 @@ impl TeamService {
         }
     }
 
-    pub async fn get_all_teams(&self) -> Result<Vec<Team>> {
-        let items = self
-            .ddb
+    pub async fn get_all_teams(&self) -> impl Stream<Item = Result<Team>> {
+        self.ddb
             .scan()
             .table_name(TEAMS_TABLE_NAME)
             .into_paginator()
             .items()
             .send()
-            .collect::<Result<Vec<_>, _>>()
-            .await?;
-
-        from_items(items).wrap_err("Failed to convert to League")
+            .map(|it| {
+                let it = it?;
+                from_item::<HashMap<String, AttributeValue>, Team>(it.clone())
+                    .wrap_err(format!("Failed to convert to Team {:?}", it))
+            })
     }
 }

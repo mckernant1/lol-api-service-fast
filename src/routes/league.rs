@@ -3,6 +3,9 @@ use actix_web::{
     web::{self, Data, Path},
     HttpResponse, Scope,
 };
+use color_eyre::Result;
+use lol_esports_api::models::League;
+use tokio_stream::StreamExt;
 
 use crate::error::LolEsportsApiError;
 use crate::svc::league::LeagueService;
@@ -16,10 +19,12 @@ pub fn league_endpoints() -> Scope {
 
 #[get("")]
 async fn get_all_leagues(league_service: Data<LeagueService>) -> Response {
-    match league_service.get_all_leagues().await {
-        Ok(leagues) => Ok(HttpResponse::Ok().json(leagues)),
-        Err(e) => Err(LolEsportsApiError::internal_error(e)),
-    }
+    let leagues: Vec<League> = league_service
+        .get_all_leagues()
+        .await
+        .collect::<Result<Vec<_>>>()
+        .await?;
+    Ok(HttpResponse::Ok().json(leagues))
 }
 
 #[get("/{leagueId}")]

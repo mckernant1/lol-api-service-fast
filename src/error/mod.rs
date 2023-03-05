@@ -5,10 +5,11 @@ use actix_web::{
     HttpResponse, ResponseError,
 };
 use color_eyre::Report;
+use derive_more::Error;
 use log::error;
 use serde_json::json;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum LolEsportsApiError {
     InternalError {
         message: Option<String>,
@@ -38,6 +39,12 @@ impl LolEsportsApiError {
             message: None,
             e: err,
         }
+    }
+}
+
+impl From<color_eyre::Report> for LolEsportsApiError {
+    fn from(value: color_eyre::Report) -> Self {
+        Self::internal_error(value)
     }
 }
 

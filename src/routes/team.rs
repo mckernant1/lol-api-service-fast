@@ -3,6 +3,8 @@ use actix_web::{
     web::{self, Data, Path},
     HttpResponse, Scope,
 };
+use color_eyre::Result;
+use tokio_stream::StreamExt;
 
 use crate::{error::LolEsportsApiError, svc::team::TeamService, util::Response};
 
@@ -14,10 +16,12 @@ pub fn team_endpoints() -> Scope {
 
 #[get("")]
 async fn get_all_teams(team_service: Data<TeamService>) -> Response {
-    match team_service.get_all_teams().await {
-        Ok(teams) => Ok(HttpResponse::Ok().json(teams)),
-        Err(e) => Err(LolEsportsApiError::internal_error(e)),
-    }
+    let teams = team_service
+        .get_all_teams()
+        .await
+        .collect::<Result<Vec<_>>>()
+        .await?;
+    Ok(HttpResponse::Ok().json(teams))
 }
 
 #[get("/{teamId}")]
