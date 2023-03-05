@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use color_eyre::{eyre::Context, Result};
 use lol_esports_api::models::Tournament;
-use serde_dynamo::{from_item};
+use serde_dynamo::from_item;
 use tokio_stream::{Stream, StreamExt};
 
 use crate::{
@@ -31,7 +31,7 @@ impl TournamentService {
                 ))
                 .into())
             }
-            Err(e) => return Err(LolEsportsApiError::internal_error(e).into()),
+            Err(e) => Err(LolEsportsApiError::internal_error(e).into()),
             Ok(Some(_)) => Ok(()),
         }
     }

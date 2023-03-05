@@ -2,11 +2,14 @@ FROM 653528873951.dkr.ecr.us-west-2.amazonaws.com/rust:alpine-arm AS build
 
 RUN apk add protoc pkgconfig openssl-dev musl-dev libc6-compat
 
+RUN rustup component add clippy
+
 RUN mkdir /app
 COPY . /app
 
 WORKDIR /app
 
+RUN cargo clippy
 RUN cargo build --release
 
 

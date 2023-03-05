@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use aws_sdk_dynamodb::{model::AttributeValue, Client};
 use color_eyre::{eyre::Context, Result};
 use lol_esports_api::models::Team;
-use serde_dynamo::{from_item};
+use serde_dynamo::from_item;
 use tokio_stream::{Stream, StreamExt};
 
 use crate::util::TEAMS_TABLE_NAME;

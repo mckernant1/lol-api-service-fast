@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, Utc};
 use lol_esports_api::models::Tournament;
 
-const TOURNEY_DATE_FORMAT: &'static str = "%Y-%m-%d";
+const TOURNEY_DATE_FORMAT: &str = "%Y-%m-%d";
 
 pub trait TournamentExt {
     fn start_date(&self) -> Option<NaiveDate>;

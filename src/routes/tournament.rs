@@ -96,11 +96,11 @@ pub async fn get_most_recent_tournament(
         .collect::<Result<Vec<_>>>()
         .await?;
 
-    let first = tourneys.first().clone();
+    let first = tourneys.first();
     let tourney = tourneys
         .iter()
         .find(|it| it.is_ongoing())
-        .or_else(|| first)
+        .or(first)
         .cloned();
     Ok(HttpResponse::Ok().json(tourney))
 }
