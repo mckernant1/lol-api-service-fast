@@ -1,4 +1,6 @@
-use actix_web::{Error, HttpResponse};
+pub mod tournament_ext;
+
+use actix_web::HttpResponse;
 
 use crate::error::LolEsportsApiError;
 

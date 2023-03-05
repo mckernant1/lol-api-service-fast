@@ -46,5 +46,4 @@ impl LeagueService {
             Ok(None)
         }
     }
-
 }

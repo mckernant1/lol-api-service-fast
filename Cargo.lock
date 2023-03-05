@@ -1392,9 +1392,9 @@ dependencies = [
 
 [[package]]
 name = "lol-esports-api"
-version = "0.0.20"
+version = "0.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65503b7b5bfd55619e16d51b9113fae959e8dc3330c877b5170c9f625551d65e"
+checksum = "74560319562f0e592260786be39b73ea95175b8c230878cbd2ca115cb3a334e2"
 dependencies = [
  "reqwest",
  "serde",

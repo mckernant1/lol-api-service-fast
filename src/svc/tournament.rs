@@ -4,10 +4,7 @@ use lol_esports_api::models::Tournament;
 use serde_dynamo::{from_item, from_items};
 use tokio_stream::StreamExt;
 
-use crate::{
-    error::LolEsportsApiError,
-    util::{TOURNAMENTS_INDEX, TOURNAMENTS_TABLE_NAME},
-};
+use crate::util::{TOURNAMENTS_INDEX, TOURNAMENTS_TABLE_NAME};
 
 pub struct TournamentService {
     ddb: Client,
@@ -57,5 +54,19 @@ impl TournamentService {
             Some(Err(e)) => Err(e.into()),
             None => Ok(None),
         }
+    }
+
+    pub async fn get_all_tournaments(&self) -> Result<Vec<Tournament>> {
+        let items = self
+            .ddb
+            .scan()
+            .table_name(TOURNAMENTS_TABLE_NAME)
+            .into_paginator()
+            .items()
+            .send()
+            .collect::<Result<Vec<_>, _>>()
+            .await?;
+
+        from_items(items.clone()).wrap_err(format!("Failed to convert to Tournament {:?}", items))
     }
 }

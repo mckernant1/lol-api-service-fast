@@ -30,6 +30,6 @@ impl MatchService {
             .collect::<Result<Vec<_>, _>>()
             .await?;
 
-        from_items(items).wrap_err("Unable to parse matches")
+        from_items(items.clone()).wrap_err(format!("Unable to parse matches from {:?}", items))
     }
 }
