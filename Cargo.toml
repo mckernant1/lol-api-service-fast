@@ -1,0 +1,21 @@
+[package]
+name = "lol-api-service-fast"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.3.1"
+aws-config = "0.54.1"
+aws-sdk-dynamodb = "0.24.0"
+chrono = "0.4.23"
+color-eyre = "0.6.2"
+derive_more = "0.99.17"
+env_logger = "0.10.0"
+log = "0.4.17"
+lol-esports-api = "0.0.20"
+serde_dynamo = { version = "4.0.12", features = ["aws-sdk-dynamodb+0_24"] }
+serde_json = "1.0.93"
+tokio = {version = "1.26.0", features = ["full"]}
+tokio-stream = "0.1.12"
