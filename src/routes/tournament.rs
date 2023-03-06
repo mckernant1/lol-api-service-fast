@@ -5,6 +5,7 @@ use actix_web::{
 };
 use chrono::{Duration, Utc};
 use color_eyre::Result;
+use itertools::Itertools;
 use lol_esports_api::models::Tournament;
 use tokio_stream::StreamExt;
 
@@ -82,7 +83,7 @@ pub async fn get_most_recent_tournament(
     let now = Utc::now().naive_utc().date();
 
     let tourneys: Vec<Tournament> = tournament_service
-        .get_all_tournaments()
+        .get_tournaments_for_league(league_id.clone())
         .await
         .filter(|tourney| match tourney {
             Ok(t) if league_id.to_ascii_lowercase() == "wcs" => t.is_official.unwrap_or(false),
@@ -94,7 +95,11 @@ pub async fn get_most_recent_tournament(
             Err(_) => true,
         })
         .collect::<Result<Vec<_>>>()
-        .await?;
+        .await?
+        .into_iter()
+        .sorted_by_key(|it| it.start_date())
+        .rev()
+        .collect();
 
     let first = tourneys.first();
     let tourney = tourneys
